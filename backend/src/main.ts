@@ -1,3 +1,8 @@
+import * as env from 'dotenv'
+// Load .env file if exists (shouldn't exist for integration/production)
+// Uses for development environments
+env.config()
+
 import './module-aliases'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
