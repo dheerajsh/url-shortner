@@ -1,3 +1,4 @@
+import { Expose } from "class-transformer";
 import { IsDate, IsDefined, IsOptional, IsUrl } from "class-validator";
 import { Column, Entity, ObjectID, ObjectIdColumn, PrimaryColumn } from "typeorm";
 import { Status } from "./url.types";
@@ -22,6 +23,7 @@ export class Url {
     @Column()
     @IsDate()
     @IsOptional()
+    @Expose()
     readonly expirationDate: Date
 
     @Column()

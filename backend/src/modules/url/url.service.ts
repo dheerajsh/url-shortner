@@ -5,9 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Cache } from 'cache-manager'
 import { plainToClass } from 'class-transformer'
 import { createHash } from 'crypto'
-import { FindOneOptions, Repository, UpdateResult } from 'typeorm'
+import { FindManyOptions, FindOneOptions, Repository, UpdateResult } from 'typeorm'
 import { Logger } from 'winston'
 import { Url } from './url.entity'
+import { UrlFilterInput } from './url.filter.input'
 import { Status } from './url.types'
 
 @Injectable()
@@ -44,6 +45,42 @@ export class UrlService {
         return url
     }
 
+    /**
+     *  Find all the original url from given filters and sort order
+     * @param input {
+     *  offset: start value defualt is 0 for pagination
+     *  limit:  limit of records to be search, default is 10
+     *  keywords: optional keywords to filter on original urls
+     *  sort: sorting order, supports expiration date, hits or both
+     * }
+     *
+     * @returns List of matchin urls
+     */
+      public async findAll(input: UrlFilterInput): Promise<[Url[], number]> {
+        this.logger.info(`searching for original Urls for given filters`)
+          const { keywords, limit, offset, orderByExpirationDate, orderbyHits } = input
+        console.log(input)
+          const findOptions: FindManyOptions = {
+            take: limit,
+            skip: offset
+          }
+          // filter for keywords if any
+          if (keywords) {
+              // join if there are multiple keywords else not.
+              const regexText = Array.isArray(keywords)? keywords.join('|') : keywords
+              findOptions.where = { originalUrl : new RegExp(`^.*(${regexText}).*$`)}
+
+          }
+          // Apply sort order if any
+          if (orderByExpirationDate) {
+              findOptions.order = { expirationDate: orderByExpirationDate }
+          }
+
+          if (orderbyHits) {
+              findOptions.order = { ...findOptions.order, hits: orderbyHits }
+          }
+          return this.urlRepository.findAndCount(findOptions)
+    }
     /**
      * Increament the hits count value by 1.
      * @param url Url object

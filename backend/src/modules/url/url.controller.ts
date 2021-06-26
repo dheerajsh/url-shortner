@@ -1,20 +1,22 @@
 
 import { LoggerService } from '@logger/logger.service'
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, InternalServerErrorException, NotFoundException, Param, Post, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, InternalServerErrorException, NotFoundException, Param, Post, Query, Res, UsePipes, ValidationPipe } from '@nestjs/common'
 import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { Logger } from 'winston'
 import { urlCreateDto } from './url.create.dto'
+import { Url } from './url.entity'
+import { UrlFilterInput } from './url.filter.input'
 import { UrlService } from './url.service'
 
 @ApiTags(`Url Api's`)
 @Controller()
 export class UrlController {
 
-  private readonly logger: Logger
+    private readonly logger: Logger
     constructor(private loggerService: LoggerService,
-    private urlService: UrlService) {
-    this.logger = this.loggerService.getLogger(UrlController.name)
+        private urlService: UrlService) {
+        this.logger = this.loggerService.getLogger(UrlController.name)
     }
 
     /**
@@ -43,21 +45,44 @@ export class UrlController {
             res.status(HttpStatus.FOUND).redirect(url.originalUrl)
         }
     }
-  /**
-   * Validate and Create a url object in the system if.
-   * Validate happen with the help of validationPipe and is defined on urlCreateDto itself
-   * @param input urlCreateDto
-   * @returns
-   */
+
+    /**
+     * Find all the urls for the given search params
+     * Accessible only for Admins
+     */
+    @Get()
+    @ApiResponse({ status: HttpStatus.OK, description: 'urls found' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'No urls found for matching criteria' })
+    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.NOT_FOUND)
+
+    public async findUrls(
+        @Query(new ValidationPipe({ transform: true })) filter: UrlFilterInput,
+    ): Promise<[Url[], number]> {
+
+        const urls = await this.urlService.findAll(filter)
+
+        if (!urls) {
+            throw new NotFoundException('No urls for found for matching search criteria')
+        }
+
+        return urls
+    }
+    /**
+     * Validate and Create a url object in the system if.
+     * Validate happen with the help of validationPipe and is defined on urlCreateDto itself
+     * @param input urlCreateDto
+     * @returns
+     */
     @Post()
     @ApiResponse({ status: HttpStatus.CREATED, description: 'Short url created.' })
     @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid Url or expiry date' })
-    @ApiBody({type: urlCreateDto})
+    @ApiBody({ type: urlCreateDto })
     @HttpCode(HttpStatus.CREATED)
-    @UsePipes(new ValidationPipe({transform: true}))
-  public async createUrl(@Body() input: urlCreateDto): Promise<String> {
+    @UsePipes(new ValidationPipe({ transform: true }))
+    public async createUrl(@Body() input: urlCreateDto): Promise<String> {
 
-    // create short url and save into DB
+        // create short url and save into DB
         try {
 
             return await this.urlService.createUrl(input.originalUrl, input.userId, input.expiryDate)
