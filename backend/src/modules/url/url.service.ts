@@ -31,7 +31,7 @@ export class UrlService {
     public async find(id: string): Promise<Url | undefined> {
         this.logger.info(`Got lookup request for short url : ${id}`)
         const fromCache = await this.cacheManager.get<Url>(id)
-        console.log(fromCache)
+
         if (fromCache) {
             this.logger.info(`Find in cache for short url: ${id}`)
             return fromCache
@@ -59,7 +59,6 @@ export class UrlService {
       public async findAll(input: UrlFilterInput): Promise<[Url[], number]> {
         this.logger.info(`searching for original Urls for given filters`)
           const { keywords, limit, offset, orderByExpirationDate, orderbyHits } = input
-        console.log(input)
           const findOptions: FindManyOptions = {
             take: limit,
             skip: offset
@@ -145,7 +144,7 @@ export class UrlService {
      * @param url
      * @returns unique short key
      */
-    private async createUniqueShortKey(url: Url): Promise<string> {
+    public async createUniqueShortKey(url: Url): Promise<string> {
         // create md2 hash from original url and unique object id of the DB.
         const hash = createHash('md5').update(url.originalUrl).update(url._id.toString())
 

@@ -1,7 +1,6 @@
-import { IDatabaseConfig } from '@config/db.config';
 import { LoggerModule } from '@logger/logger.module';
 import { CacheModule, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService, getConfigToken } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UrlController } from './url.controller';
