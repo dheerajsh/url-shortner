@@ -8,12 +8,13 @@ services:
       target: dev-build
     environment: []
     volumes:
-      # - ./src:/app/src/
       - ./:/app/
-      # - ./node_modules:/app/node_modules/
     entrypoint: ['npm', 'run', 'start:dev']
     env_file:
       - .env
+      # To use DB running on local machine.
+    environment:
+      - DB_HOST=host.docker.internal
     ports:
       - "4000:4000"
       - "4001:4001"

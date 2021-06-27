@@ -10,6 +10,7 @@ import { Logger } from 'winston'
 import { Url } from './url.entity'
 import { UrlFilterInput } from './url.filter.input'
 import { Status } from './url.types'
+import { createUniqueShortKey } from './url.utils'
 
 @Injectable()
 export class UrlService {
@@ -113,7 +114,8 @@ export class UrlService {
 
     // create short url
     if (result.identifiers.length > 0 && newUrl.id == null) {
-      const shortKey = await this.createUniqueShortKey(newUrl)
+      // eslint-disable-next-line no-underscore-dangle
+      const shortKey = await createUniqueShortKey(newUrl.originalUrl, newUrl._id.toString())
       const updatedUrl = plainToClass(Url, { ...newUrl, id: shortKey })
       await this.urlRepository.update(updatedUrl._id, updatedUrl) // eslint-disable-line no-underscore-dangle
       this.logger.info(`A unique short key is generated for url: ${originalUrl}`)
@@ -142,19 +144,5 @@ export class UrlService {
 
     return this.urlRepository.update(url._id, updatedUrl) // eslint-disable-line no-underscore-dangle
   }
-  /**
-     * returns a unique short key for the url
-     * @param url
-     * @returns unique short key
-     */
-  public async createUniqueShortKey(url: Url): Promise<string> {
-    // create md2 hash from original url and unique object id of the DB.
-    const hash = createHash('md5').update(url.originalUrl).update(url._id.toString()) // eslint-disable-line no-underscore-dangle
 
-    const hashValue = hash.digest('hex')
-
-    const base64Value = Buffer.from(hashValue).toString('base64')
-
-    return base64Value.substr(0,4) + base64Value.substr(base64Value.length-5,4) // eslint-disable-line no-magic-numbers
-  }
 }
