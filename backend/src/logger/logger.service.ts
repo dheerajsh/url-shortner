@@ -1,23 +1,26 @@
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { TransformableInfo } from 'logform'
 import moment from 'moment'
 import { createLogger, format, Logger, transports } from 'winston'
 import Transport from 'winston-transport'
-import { ConfigService } from '@nestjs/config'
-import { LogLevel, LogInfo} from './logger.interfaces'
+import { LogInfo, LogLevel } from './logger.interfaces'
 
 @Injectable()
 export class LoggerService {
-
-  private readonly loggerMap: Map<string, Logger>
+  private readonly loggerMap: Map<string, Logger> // eslint-disable-line functional/prefer-readonly-type
   private readonly logger: Logger
 
-  constructor(private configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     this.logger = createLogger()
 
     this.loggerMap = new Map()
     this.loggerMap.set(LoggerService.name, this.logger)
-    this.configure(this.logger, this.configService.get<string>('LOG_LEVEL', LogLevel.info), this.configService.get<string>('LOG_TRANSPORT'))
+    this.configure(
+      this.logger,
+      this.configService.get<string>('LOG_LEVEL', LogLevel.info),
+      this.configService.get<string>('LOG_TRANSPORT'),
+    )
 
   }
 
@@ -37,13 +40,17 @@ export class LoggerService {
     return this.logger
   }
 
-  public readonly configure = (logger: Logger, logLevel: string, outputType?: string): void => {
+  public readonly configure = (
+    logger: Logger,
+    logLevel: string,
+    outputType?: string,
+  ): void => {
     const transportInstance = this.getTransport(outputType)
 
     logger.configure({
+      exitOnError: false,
       level: logLevel,
       transports: [transportInstance],
-      exitOnError: false,
     })
   }
 
@@ -71,15 +78,15 @@ export class LoggerService {
     const date = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZZ')
     const customFields = this.createCustomFields(info)
     const log = {
-      log_time: `[${date}]`, // eslint-disable-line @typescript-eslint/camelcase
-      log_level: info.level.toUpperCase(), // eslint-disable-line @typescript-eslint/camelcase
+      log_level: info.level.toUpperCase(),
+      log_time: `[${date}]`,
+      message: this.createMessage(info),
       ...{
+        custom_fields: customFields,
+        label: info.label,
         request: info.request,
         response: info.response,
-        label: info.label,
-        custom_fields: customFields,  // eslint-disable-line @typescript-eslint/camelcase
       },
-      message: this.createMessage(info),
     }
 
     return JSON.stringify(log)
@@ -99,7 +106,7 @@ export class LoggerService {
     return `${className}${info.message.replace(className, '')}`
   }
 
-  // tslint:disable:cyclomatic-complexity no-unsafe-any no-object-mutation no-any
+  // eslint-disable cyclomatic-complexity no-unsafe-any no-object-mutation no-any
   /**
    * Create custom_fields for kibana.
    *
@@ -108,19 +115,20 @@ export class LoggerService {
    * @returns {Object}
    * @memberof LogService
    */
-  private createCustomFields(info: TransformableInfo): object {
-    const metaInfo = (info.meta && info.meta instanceof LogInfo) ? info.meta : {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private createCustomFields(info: TransformableInfo): any {
+    const metaInfo = info.meta && info.meta instanceof LogInfo ? info.meta : {}
     const customFields = {
-      ...(info.custom_fields ? info.custom_fields : {}),
+      ...(info.custom_fields ? info.custom_fields : Object),
       ...metaInfo,
     }
     // Convert any fields value to be string.
     // Ref: https://stackoverflow.com/a/14810722
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Object.keys(customFields).reduce((result: any, key) => {
-      result[key] = customFields[key]
+      result[key] = customFields[key] // eslint-disable-line functional/immutable-data
       if (typeof result[key] !== 'string') {
-        result[key] = JSON.stringify(result[key])
+        result[key] = JSON.stringify(result[key]) // eslint-disable-line functional/immutable-data
       }
 
       return result
@@ -130,7 +138,7 @@ export class LoggerService {
     return Object.keys(customFields).length > 0 ? customFields : null
   }
 
-  // tslint:enable:cyclomatic-complexity no-unsafe-any no-object-mutation no-any
+  // eslint-enable cyclomatic-complexity no-unsafe-any no-object-mutation no-any
   private getTransport(outputType?: string): Transport {
     switch (outputType) {
     case 'kibana':
@@ -145,8 +153,11 @@ export class LoggerService {
 
     default:
       return new transports.Console({
-        format: format.combine(format.printf(this.format),format.colorize({all:true})),
         handleExceptions: true,
+        format: format.combine(
+          format.printf(this.format),
+          format.colorize({ all: true }),
+        ),
       })
     }
   }

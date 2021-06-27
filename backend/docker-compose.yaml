@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  urlShortnerApi:
+    image: api-service:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev-build
+    environment: []
+    volumes:
+      # - ./src:/app/src/
+      - ./:/app/
+      # - ./node_modules:/app/node_modules/
+    entrypoint: ['npm', 'run', 'start:dev']
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"
+      - "4001:4001"

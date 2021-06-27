@@ -1,37 +1,63 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { SortOrder } from "./url.types";
+import { ApiProperty } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import { SortOrder } from './url.types'
 
 export class UrlFilterInput {
 
-  @ApiProperty({ type: Number, description: 'offset record number for pagination, default is 0', required: false })
+  @ApiProperty({
+    description: 'offset record number for pagination, default is 0',
+    required: false,
+    type: Number,
+  })
   @IsOptional()
   @IsNumber()
-  @Type(() => Number)
-  readonly offset: number = 0
+  @Type(() => {
+    return Number
+  })
+  readonly offset: number = 0 // eslint-disable-line no-magic-numbers
 
-  @ApiProperty({ type: Number, description: 'limit number of records for pagination, default is 10', required: false })
+  @ApiProperty({
+    description: 'limit number of records for pagination, default is 10',
+    required: false,
+    type: Number,
+  })
   @IsOptional()
   @IsNumber()
-  @Type(() => Number)
-  readonly limit: number = 10
+  @Type(() => {
+    return Number
+  })
+  readonly limit: number = 10 // eslint-disable-line no-magic-numbers
 
-  @ApiProperty({ type: [String], description: 'keywords to be filter on original urls', required: false })
+  @ApiProperty({
+    description: 'keywords to be filter on original urls',
+    required: false,
+    type: [String],
+  })
   @IsOptional()
   @IsString({ each: true })
-  @Type(() => String)
-  readonly keywords: string[];
+  @Type(() => {
+    return String
+  })
+  readonly keywords: readonly string[]
 
-  @ApiProperty({ type: SortOrder, description: 'Sort by expiry date', required: false })
+  @ApiProperty({
+    description: 'Sort by expiry date',
+    required: false,
+    type: SortOrder,
+  })
   @IsOptional()
   @IsEnum(SortOrder, { message: 'expiration date order must be one of ASC or DESC' })
   readonly orderByExpirationDate: SortOrder
 
 
-  @ApiProperty({ type: SortOrder, description: 'Sort by hits rate', required: false })
+  @ApiProperty({
+    description: 'Sort by hits rate',
+    required: false,
+    type: SortOrder,
+  })
   @IsOptional()
   @IsEnum(SortOrder, {message : 'hits order must be one of ASC or DESC'})
-  readonly orderbyHits: SortOrder;
+  readonly orderbyHits: SortOrder
 }
 

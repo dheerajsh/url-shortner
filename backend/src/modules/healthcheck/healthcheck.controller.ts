@@ -10,7 +10,7 @@ import { Logger } from 'winston'
 export class HealthcheckController {
 
   private readonly logger: Logger
-  constructor(private loggerService: LoggerService) {
+  constructor(private readonly loggerService: LoggerService) {
     this.logger = this.loggerService.getLogger(HealthcheckController.name)
   }
 

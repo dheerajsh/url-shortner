@@ -1,9 +1,9 @@
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Expose, Transform, Type } from 'class-transformer'
-import { IsDate, IsDateString, IsDefined, IsOptional, IsUrl } from 'class-validator'
+import { Expose, Type } from 'class-transformer'
+import { IsDate, IsDefined, IsOptional, IsUrl } from 'class-validator'
 
-export class urlCreateDto {
+export class UrlCreateDto {
 
   @ApiProperty({
     type: 'string',
@@ -19,7 +19,9 @@ export class urlCreateDto {
 
   @IsOptional()
   @IsDate()
-  @Type(() => Date)
+  @Type(() => {
+    return Date
+  })
   @ApiProperty({ type: String, description: 'as UTCDate ex. 2022-01-19T12:26:51.000Z' })
   readonly expiryDate?: Date
 

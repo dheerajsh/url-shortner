@@ -1,7 +1,7 @@
 export class LogInfo {
   readonly jwtIssuer: string
   readonly status: number
-  readonly body: object
+  readonly body: object // eslint-disable-line @typescript-eslint/ban-types
   readonly resource: string
 }
 
