@@ -9,6 +9,7 @@ export function CreateShortUrl() {
   // const [error, setError] = useState('');
   const error = useAppSelector(selectError)
   const [originalUrl, setOriginalUrl] = useState('');
+  const [expirationDate, setExpirationDate] = useState('');
 
   const errorMassage = error ? (<div><label className={styles.alert}>{ error }</label></div>) : error
   return (
@@ -17,12 +18,20 @@ export function CreateShortUrl() {
         <input
           className={styles.textbox}
           aria-label="enter an url"
+          placeholder='Enter the full url'
           value={originalUrl}
           onChange={(e) => setOriginalUrl(e.target.value)}
         />
+        <input
+          className={styles.textbox}
+          aria-label="enter an Expiry date"
+          placeholder='UTC Format i.e 2021-06-27T00:00:00.000Z'
+          value={expirationDate}
+          onChange={(e) => setExpirationDate(e.target.value)}
+        />
         <button
           className={styles.button}
-          onClick={() => dispatch(clearError()) && dispatch(createShortUrlAsync(originalUrl))}
+          onClick={() => dispatch(clearError()) && dispatch(createShortUrlAsync({ originalUrl, expirationDate }))}
         >
          create a short url
         </button>

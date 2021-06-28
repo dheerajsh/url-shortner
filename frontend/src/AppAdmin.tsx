@@ -1,13 +1,13 @@
 import React from 'react';
 import './App.css';
-import { UserHome } from './features/user/userHome';
+import { AdminHome } from './features/admin/AdminHome';
 
 function AdminApp() {
   return (
     <div className="App">
       <header className="App-header">
         {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        <UserHome />
+        <AdminHome />
       </header>
     </div>
   );

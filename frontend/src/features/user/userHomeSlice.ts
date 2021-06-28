@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { stat } from 'fs';
 import { RootState } from '../../app/store';
 import { createShortUrl } from './createUrlAPI';
 
@@ -8,6 +7,12 @@ export interface UrlInfo {
   shortUrl: string,
   originalUrl: string
 }
+
+export interface CreateShortUrlDto {
+  originalUrl: string,
+  expirationDate: string
+}
+
 export interface UserHomeState {
   userId: string,
   urlInfos: UrlInfo[],
@@ -27,13 +32,13 @@ const initialState: UserHomeState = {
 // typically used to make async requests.
 export const createShortUrlAsync = createAsyncThunk(
   'user/createShortUrlAsync',
-  async (originalUrl: string, { getState }) => {
+  async (createRequest :CreateShortUrlDto, { getState }) => {
     const state = getState() as RootState;
     try {
-      const response = await createShortUrl(originalUrl, state.user.userId);
+      const response = await createShortUrl(createRequest.originalUrl, createRequest.expirationDate, state.user.userId);
       // The value we return becomes the `fulfilled` action payload
       return ({
-        originalUrl,
+        originalUrl: createRequest.originalUrl,
         shortUrl: response.data
       }) as UrlInfo
 
