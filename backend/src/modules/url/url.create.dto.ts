@@ -29,7 +29,7 @@ export class UrlCreateDto {
     type: 'string',
   })
   @Expose()
-  @IsOptional()
+  @IsDefined()
   readonly userId: string
 
 
