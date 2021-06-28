@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import {selectUserId, createShortUrlAsync} from './userHomeSlice'
+import { createShortUrlAsync, selectError, clearError} from './userHomeSlice'
 import styles from './user.module.css';
 
 export function CreateShortUrl() {
   const dispatch = useAppDispatch();
+  // const [error, setError] = useState('');
+  const error = useAppSelector(selectError)
   const [originalUrl, setOriginalUrl] = useState('');
+
+  const errorMassage = error ? (<div><label className={styles.alert}>{ error }</label></div>) : error
   return (
     <div>
       <div className={styles.row}>
@@ -18,11 +22,12 @@ export function CreateShortUrl() {
         />
         <button
           className={styles.button}
-          onClick={() => dispatch(createShortUrlAsync(originalUrl))}
+          onClick={() => dispatch(clearError()) && dispatch(createShortUrlAsync(originalUrl))}
         >
          create a short url
         </button>
       </div>
+      { errorMassage }
     </div>
   );
 }

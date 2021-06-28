@@ -12,7 +12,7 @@ import { IServerConfig } from '@config/server.config'
 import { LoggerService } from '@logger/logger.service'
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, {cors: true})
   const options = new DocumentBuilder()
     .setTitle('API\'s')
     .setDescription('The API description')

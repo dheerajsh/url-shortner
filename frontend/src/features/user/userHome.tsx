@@ -4,6 +4,13 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { setUserId as changeUserId, selectUserId, selectUrlInfos, UrlInfo} from './userHomeSlice'
 import styles from './user.module.css';
 import { CreateShortUrl } from './createShortUrl';
+import { BACKEND_SERVICE_URL } from '../../Constants';
+import {
+  CDataTable,
+} from '@coreui/react'
+
+// Import CoreUI styles
+import "@coreui/coreui/scss/coreui.scss"
 
 export function UserHome() {
   const dispatch = useAppDispatch();
@@ -38,16 +45,23 @@ const urlInformations = getUrlInfosWidget(urlInfos)
   function getUrlInfosWidget(urlInfos: UrlInfo[]) {
     if (urlInfos && urlInfos.length > 0) {
       const infos =  urlInfos.map((urlInfo) => {
-        return (<tr><td>{urlInfo.originalUrl}</td><td>{urlInfo.shortUrl}</td></tr>)
+        return ({
+          id: urlInfo.shortUrl,
+          shortUrl: `${BACKEND_SERVICE_URL}/${urlInfo.shortUrl}`,
+          originalUrl: urlInfo.originalUrl
+        })
       })
 
-      return (<table>
-        <tr>
-          <th>Original Url</th>
-          <th>Short Url</th>
-        </tr>
-         {infos}
-      </table>)
+      return (
+        <CDataTable
+              items={infos}
+              fields={['shortUrl', 'originalUrl']}
+              hover
+              striped
+              size="sm"
+              itemsPerPage={10}
+              pagination
+            />)
     }
   }
 }

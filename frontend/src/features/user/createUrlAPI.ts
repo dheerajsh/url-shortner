@@ -1,6 +1,12 @@
+import axios from "axios";
+import { BACKEND_SERVICE_URL } from "../../Constants";
+
 // A mock function to mimic making an async request for data
-export function createShortUrl(originalUrl: string, userId: string = 'tstuserid') {
-  return new Promise<{ data: string }>((resolve) =>
-    setTimeout(() => resolve({ data: originalUrl.substr(0,8) }), 500)
-  );
+export async function createShortUrl(originalUrl: string, userId: string) {
+  console.log(BACKEND_SERVICE_URL, originalUrl)
+ return await axios.post(BACKEND_SERVICE_URL, {
+    originalUrl,
+    userId
+  })
+
 }

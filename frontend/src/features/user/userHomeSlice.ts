@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { stat } from 'fs';
 import { RootState } from '../../app/store';
 import { createShortUrl } from './createUrlAPI';
 
@@ -9,12 +10,14 @@ export interface UrlInfo {
 }
 export interface UserHomeState {
   userId: string,
-  urlInfos: UrlInfo[]
+  urlInfos: UrlInfo[],
+  error : string,
 }
 
 const initialState: UserHomeState = {
   userId: '',
-  urlInfos: []
+  urlInfos: [],
+  error: ''
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -26,13 +29,18 @@ export const createShortUrlAsync = createAsyncThunk(
   'user/createShortUrlAsync',
   async (originalUrl: string, { getState }) => {
     const state = getState() as RootState;
-    const response = await createShortUrl(originalUrl, state.user.userId);
-    console.log(response)
-    // The value we return becomes the `fulfilled` action payload
-    return ({
-      originalUrl,
-      shortUrl: response.data
-    }) as UrlInfo
+    try {
+      const response = await createShortUrl(originalUrl, state.user.userId);
+      // The value we return becomes the `fulfilled` action payload
+      return ({
+        originalUrl,
+        shortUrl: response.data
+      }) as UrlInfo
+
+    } catch (error) {
+      throw error
+    }
+
   }
 );
 
@@ -51,6 +59,9 @@ export const userHomeSlice = createSlice({
     createShortUrlAction: (state) => {
       state.urlInfos = {...state.urlInfos}
     },
+    clearError: (state) => {
+      state.error = ''
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -58,20 +69,26 @@ export const userHomeSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createShortUrlAsync.fulfilled, (state, action) => {
-        // state.status = 'idle';
-        const urlInfor = action.payload
-        state.urlInfos.push(urlInfor)
-        console.log(state.urlInfos)
+        if (action.payload) {
+          const urlInfor = action.payload
+          state.urlInfos.push(urlInfor)
+        }
+      })
+      .addCase(createShortUrlAsync.rejected, (state, action) => {
+        if (action.error) {
+          state.error = 'Invalid url'
+        }
       });
   },
 });
 
-export const { setUserId, createShortUrlAction } = userHomeSlice.actions;
+export const { setUserId, createShortUrlAction, clearError } = userHomeSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectUserId = (state: RootState) => state.user.userId;
 export const selectUrlInfos = (state: RootState) => state.user.urlInfos;
+export const selectError =  (state: RootState) => state.user.error;
 
 export default userHomeSlice.reducer;

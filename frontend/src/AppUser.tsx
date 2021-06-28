@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { UserHome } from './features/user/userHome';
 
-function App() {
+function UserApp() {
   return (
     <div className="App">
       <header className="App-header">
@@ -13,4 +13,4 @@ function App() {
   );
 }
 
-export default App;
+export default UserApp;
