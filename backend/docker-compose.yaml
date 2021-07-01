@@ -18,9 +18,13 @@ services:
     entrypoint: ['npm', 'run', 'start:dev']
     env_file:
       - .env
-      # To use DB running on local machine.
-    # environment:
-    #   - DB_HOST=host.docker.internal
+      # To use DB running with docker compose.
+    environment:
+      - DB_HOST=mongo
+      - DB_PORT=27017
+      - DB_NAME=url_shortner
+      - DB_USER=
+      - DB_PASS=
     ports:
       - "4000:4000"
       - "4001:4001"
