@@ -9,7 +9,7 @@ export default registerAs<ConfigFactory<IDatabaseConfig>>('database', () => {
     host: process.env.DB_HOST || 'localhost',
     pass: process.env.DB_PASS || '',
     poolSize: parseInt(process.env.DB_POOL_SIZE, 10) || 2,// eslint-disable-line no-magic-numbers
-    port: parseInt(process.env.DB_PORT, 10) || 27013,  // eslint-disable-line no-magic-numbers
+    port: parseInt(process.env.DB_PORT, 10) || 27017,  // eslint-disable-line no-magic-numbers
     queryTimeout: parseInt(process.env.DB_QUERY_TIMEPUT, 10) || 2000,// eslint-disable-line no-magic-numbers
     reconnectInterval: parseInt(process.env.DB_RECONNECT_INTERVAL, 10) || 1000,// eslint-disable-line no-magic-numbers
     reconnectTry: parseInt(process.env.DB_RECONNECT_INTERVAL, 10) || 86400,// eslint-disable-line no-magic-numbers

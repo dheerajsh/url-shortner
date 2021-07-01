@@ -59,18 +59,18 @@ $ npm run test:e2e
 ```
 
 ## Database
-### This service uses Mongo DB for storing/reteriving data. Please install and start mongo DB on local before running the application
+### This service uses Mongo DB for storing/reteriving data. Please install and start mongo DB on local if you are not using docker compose before running the application. If you are using docker compose then no need to do this.
 1. start the mongodb service on your local
-2. create a DB name `url_shortner` if it's not there. [How to create a DB](https://www.mongodb.com/basics/create-database)
+2. Optional: create a DB name `url_shortner` if it's not there. [How to create a DB](https://www.mongodb.com/basics/create-database)
 3. switch to the DB `url_shortner` you can use ```use url_shortner` from mongo shell.
-2. create a user ```db.createUser(
+4. Optional: create a user ```db.createUser(
 {
 user:"rabbit",
 pwd: "rabbit123",
 roles: [{role: "readWrite", db: "url_shortner"}]
 }
 )```
-
+5. Update the .env file to use the mongo credentials from local.
 ## Encoding actual URL #
 We can compute a unique hash (e.g., MD5 or SHA256, etc.) of the given URL. The hash can then be encoded for display. This encoding could be base36 ([a-z ,0-9]) or base62 ([A-Z, a-z, 0-9]) and if we add ‘+’ and ‘/’ we can use Base64 encoding. A reasonable question would be, what should be the length of the short key? 6, 8, or 10 characters?
 

@@ -1,5 +1,11 @@
 version: '3.4'
 services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
   urlShortnerApi:
     image: api-service:dev
     build:
@@ -13,8 +19,11 @@ services:
     env_file:
       - .env
       # To use DB running on local machine.
-    environment:
-      - DB_HOST=host.docker.internal
+    # environment:
+    #   - DB_HOST=host.docker.internal
     ports:
       - "4000:4000"
       - "4001:4001"
+volumes:
+  mongodb:
+
