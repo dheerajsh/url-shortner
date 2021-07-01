@@ -15,32 +15,33 @@ The shortened URL is nearly one-third the size of the actual URL.
 
 URL shortening is used to optimize links across devices, track individual links to analyze audience, measure ad campaigns’ performance, or hide affiliated original URLs.
 
-## Installation
+## Installation local
 
 ```bash
 # using docker
-$ docker-compose up
+$ docker-compose build
 
 # without using docker
 $ npm install
 $ npm run build
 ```
 
-## Running the app
+## Running the app local
 
 ```bash
-# development using docker
+# development using docker compose
 $ docker-compose up
 
-# development without using docker
+# development without using docker compose
 $ npm run start
 
 # watch mode
 $ npm run start:dev
+```
 
-# production mode without docker
-$ npm run start:prod
+## Production Environment (Make sure you have mongodb cluster running and updated environment files to connect it)
 
+```bash
 # production mode with docker
 $ docker build -t urlShortnerApi:prod .
 $ docker run -p4000:4000 -t urlShortnerApi:prod
@@ -71,7 +72,7 @@ roles: [{role: "readWrite", db: "url_shortner"}]
 }
 )```
 5. Update the .env file to use the mongo credentials from local.
-## Encoding actual URL #
+## Encoding actual URL
 We can compute a unique hash (e.g., MD5 or SHA256, etc.) of the given URL. The hash can then be encoded for display. This encoding could be base36 ([a-z ,0-9]) or base62 ([A-Z, a-z, 0-9]) and if we add ‘+’ and ‘/’ we can use Base64 encoding. A reasonable question would be, what should be the length of the short key? 6, 8, or 10 characters?
 
 Using base64 encoding, a 6 letters long key would result in 64^6 = ~68.7 billion possible strings.
